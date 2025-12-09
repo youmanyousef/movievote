@@ -1,0 +1,128 @@
+/* Header Placement */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #16213e;
+    border-bottom: 1px solid rgba(233, 69, 96, 0.2);
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.header-container {
+    padding: 0 40px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Logo */
+.logo a {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.logo a:hover {
+    color: #e94560;
+}
+
+/* Header Styles */
+.header-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-header {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.btn-login {
+    color: #ffffff;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-login:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-register {
+    color: #ffffff;
+    background-color: #e94560;
+}
+
+.btn-register:hover {
+    background-color: #d63651;
+    transform: translateY(-1px);
+}
+
+/* Room from header */
+body {
+    padding-top: 60px;
+}
+
+/* home page styles  */
+          .landing-card {
+              text-align: center;
+              margin-top: -80px;
+          }
+
+          .logo-section {
+              margin-bottom: 50px;
+          }
+
+          .app-title {
+              font-size: 4rem;
+              font-weight: 700;
+              margin-bottom: 15px;
+              color: #ffffff;
+          }
+
+          .app-tagline {
+              font-size: 1.5rem;
+              color: #a0a0a0;
+          }
+
+          .button-group {
+              display: flex;
+              flex-direction: column;
+              gap: 15px;
+          }
+
+          @media (max-width: 768px) {
+              .app-title {
+                  font-size: 3rem;
+              }
+
+              .app-tagline {
+                  font-size: 1.25rem;
+              }
+
+              .landing-card {
+                  margin-top: -60px;
+              }
+          }
+
+          @media (max-width: 480px) {
+              .app-title {
+                  font-size: 2.5rem;
+              }
+
+              .app-tagline {
+                  font-size: 1rem;
+              }
+
+              .landing-card {
+                  margin-top: -40px;
+              }
+          }
