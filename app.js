@@ -1,54 +1,125 @@
+/**
+ * Main application entry point
+ * This file sets up our Express server, middleware, and routes
+ */
+
+
+require('dotenv').config();
+
+// Core dependencies
 const express = require('express');
 const path = require('path');
+const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
+const csrf = require('csurf');
 
+// Import database configuration
+const { pool } = require('./config/database');
+
+// Import routes
+const indexRoutes = require('./routes/index');
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
+const voteRoutes = require('./routes/vote');
+
+// Import custom middleware
+const { setLocals } = require('./middlewares/locals');
+const { handleErrors } = require('./middlewares/error-handler');
+
+// Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-//Middleware
+// Test database connection on startup
+if (process.env.DATABASE_URL) {
+  pool.query('SELECT NOW()')
+    .then(() => console.log('PostgreSQL connected successfully'))
+    .catch(err => {
+      console.error('PostgreSQL connection error:', err);
+      console.log('Continuing without database. Some features may not work.');
+    });
+} else {
+  console.log('No DATABASE_URL found in environment.');
+  console.log('Please set up your PostgreSQL connection in the .env file to enable authentication features.');
+}
+
+// Configure Express
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Setting up all the ejs files
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'templates'));
+//app.set('views', path.join(__dirname, 'templates')); // will change to views later
+app.set('views', path.join(__dirname, 'views'));
 
-// All the routes for the EJS files
-app.get('/', (req, res) => {
-    res.render('home');
+// Helper function for error responses
+app.locals.helpers = {
+  isActiveRoute: (path, route) => path === route,
+  currentYear: () => new Date().getFullYear(),
+  formatDate: (date) => {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+};
+
+// Session configuration
+let sessionConfig = {
+  secret: process.env.SESSION_SECRET || 'fallback-secret-for-development',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24, // 1 day
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // false
+    sameSite: 'lax'
+  }
+};
+
+// Configure PostgreSQL session store
+try {
+  if (process.env.DATABASE_URL) {
+    sessionConfig.store = new pgSession({
+      pool: pool,
+      tableName: 'session',
+      createTableIfMissing: true
+    });
+    console.log('PostgreSQL session store configured');
+  } else {
+    console.log('Using memory session store (not recommended for production)');
+  }
+} catch (error) {
+  console.error('Error configuring PostgreSQL session store:', error);
+  console.log('Falling back to memory session store (not recommended for production)');
+}
+app.use(session(sessionConfig));
+
+// CSRF protection disabled temporarily
+console.log('CSRF protection is currently disabled');
+
+// Set a dummy CSRF token for templates
+app.use((req, res, next) => {
+  // Provide a dummy token so templates don't break
+  res.locals.csrfToken = 'csrf-protection-disabled';
+  next();
 });
 
-app.get('/create', (req, res) => {
-    res.render('create');
-});
+// Our custom locals middleware
+app.use(setLocals);
 
-app.get('/join', (req, res) => {
-    res.render('join');
-});
+// Routes
+// move old ones too /routes dir
+app.use('/', indexRoutes);
+app.use('/auth', authRoutes);
+app.use('/user', userRoutes);
+app.use('/vote', voteRoutes);
 
-app.get('/lobby', (req, res) => {
-    res.render('lobby');
-});
-
-app.get('/vote', (req, res) => {
-    res.render('vote');
-});
-
-app.get('/results', (req, res) => {
-    res.render('results');
-});
-
-app.get('/choices', (req, res) => {
-    res.render('choices');
-});
-
-app.get('/wait', (req, res) => {
-    res.render('wait');
-});
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`the Server is running on http://localhost:${PORT}`);
+	
 });
-
-
+// Error handling middleware
+app.use(handleErrors);
