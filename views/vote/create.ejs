@@ -1,4 +1,5 @@
-﻿<form action="?">
+﻿<%- include('../partials/header') %>
+<form action="?">
 	<input type="checkbox" id="enableShows" value="Shows">
 	<label for="enableShows">Enable Shows?</label><br>
 	<input type="checkbox" id="enableMovies" value="Movies">
@@ -10,3 +11,4 @@
 	<input id="choices">
 	<input type="submit" value="Submit">
 </form>
+<%- include('../partials/footer') %>
