@@ -8,7 +8,7 @@ const router = express.Router();
 // Home page route
 router.get('/', (req, res) => {
   console.log('hi');
-  res.render('index', { 
+  res.render('vote/home', { 
     title: 'Home',
     message: 'Welcome to the Authentication Template'
   });
