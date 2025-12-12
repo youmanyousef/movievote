@@ -1,14 +1,23 @@
 ﻿<%- include('../partials/header') %>
-<form action="?">
+<form action="/vote/create" method="POST">
+	<label for="lobbyCode">Lobby Code:</label>
+	<input id="lobbyCode" name="code" placeholder="e.g. ABC123" required>
+	<small> Create a code to share with friends!</small>
+	<br><br>
+
 	<input type="checkbox" id="enableShows" value="Shows">
 	<label for="enableShows">Enable Shows?</label><br>
+
 	<input type="checkbox" id="enableMovies" value="Movies">
 	<label for="enableMovies">Enable Movies?</label><br>
+
 	<input type="checkbox" id="setTimer" value="TimeSet">
 	<label for="setTimer">Enable a time limit during the voting phase?</label><br>
 	<input hidden id="setTimerValue"> <br>
+
 	<label for="choices">Choices per user: </label>
-	<input id="choices">
+	<input id="choices" name="choicesPerUser" type="number" min="1" required> 
+
 	<input type="submit" value="Submit">
 </form>
 <%- include('../partials/footer') %>

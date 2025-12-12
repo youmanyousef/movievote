@@ -1,13 +1,21 @@
 ﻿<%- include('../partials/header') %>
+
+<h1>Lobby: <%= code %></h1>
+
 <input type="text" name="code" value="1234" disabled> 
 <button>Copy code</button> 
 <br>
 <span>User List:</span> <br>
-<textarea disabled>
-User1
-youmanyousef
-Guest2
-</textarea> <br>
+<ul>
+    <% if (lobby.users.length === 0) { %>
+        <li>No users yet</li>
+    <% } else { %>  
+        <% lobby.users.forEach(u => { %>
+            <li><%= u %></li>
+        <% }) %>
+    <% } %>
+
+</ul> <br>
 
 <button>Leave</button>
 <button disabled>GO!</button>
