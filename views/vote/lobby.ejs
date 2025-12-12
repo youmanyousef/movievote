@@ -32,15 +32,10 @@
     </button>
 </form>
 
-<a href="/vote/home"><button type="button">Leave</button></a>
+<a href="/"><button type="button">Leave</button></a>
 
 <% if (isHost){ %>
-    <form action="/vote/lobby/start" method="POST" style="display:inline;">
-        <input type="hidden" name="code" value="<%= code %>">
-        <button type="submit" <%= everyoneReady ? "" : "disabled" %>>
-            GO!
-        </button>
-    </form>
+    <p>Once everyone is ready voting will begin!</p>
 
     <% if (!everyoneReady) { %>
         <p>Waiting for everyone to ready up…</p>
