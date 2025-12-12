@@ -39,25 +39,44 @@ router.get('/lobby', async (req, res) => {
 		});
 	}
 
-	if (req.session.user) {
+	if (!req.session.user) return res.redirect('/auth/login');
+
+		const userId = req.session.user.id;
   		const username = req.session.user.username;
 
 		if (!Array.isArray(lobby.users)) lobby.users = [];
 
-  		if (!lobby.users.includes(username)) {
-    		lobby.users.push(username);
- 		}
-	}
+  		if (!lobby.users.some(u => u.id === userId)) {
+  			lobby.users.push({ id: userId, username, ready: false });
+		}
+
+		const isHost = lobby.createdBy === userId;
+		const everyoneReady = lobby.users.length > 0 && lobby.users.every(u => u.ready);
 
     return res.render('vote/lobby', { 
 		title: 'Lobby',
 		code,
-		lobby
+		lobby,
+		isHost,
+		everyoneReady,
+		currentUserId: userId
+	
 	});
-
-
-
 });
+
+router.get('/lobby/status', async (req, res) => {
+  	const code = (req.query.code || '').trim().toUpperCase();
+  	const lobby = await Lobby.get(code);
+
+  	if (!lobby) return res.status(404).json({ ok: false });
+
+  	const everyoneReady =
+    	(lobby.users || []).length > 0 &&
+    	lobby.users.every(u => u.ready);
+
+  	return res.json({ ok: true, everyoneReady });
+});
+
 
 router.get('/vote', (req, res) => {
     res.render('vote/vote', { 
@@ -73,10 +92,22 @@ router.get('/result', (req, res) => {
 	});	
 });
 
-router.get('/choices', (req, res) => {
+router.get('/choices', async (req, res) => {
+	const code = (req.query.code || '').trim().toUpperCase();
+  	const lobby = await Lobby.get(code);
+
+	if (!lobby) return res.redirect('/vote/join');
+
+	const everyoneReady = (lobby.users || []).length > 0 && lobby.users.every(u => u.ready);
+
+	if (!everyoneReady) {
+		return res.redirect(`/vote/lobby?code=${encodeURIComponent(code)}`);
+	}
+
 	res.render('vote/choices', { 
 		title: 'Choose',
-		message: 'Welcome to the Authentication Template'
+		code,
+		lobby
 	});
 });
 
@@ -114,6 +145,39 @@ router.post('/create', async (req, res) => {
 
   return res.redirect(`/vote/lobby?code=${encodeURIComponent(code)}`);
   
+});
+
+router.post('/lobby/ready', async (req, res) => {
+	const code = (req.body.code || '').trim().toUpperCase();
+  	if (!code) return res.redirect('/vote/join');
+
+	const lobby = await Lobby.get(code);
+	if (!lobby || !req.session.user) return res.redirect('/vote/join');
+
+	const userId = req.session.user.id;
+
+	const me = (lobby.users || []).find(u => u.id === userId);
+	if (me) me.ready = !me.ready;
+
+	return res.redirect(`/vote/lobby?code=${encodeURIComponent(code)}`);
+});
+
+router.post('/lobby/start', async (req, res) => {
+  	const code = (req.body.code || '').trim().toUpperCase();
+  	if (!code) return res.redirect('/vote/join');
+
+  	const lobby = await Lobby.get(code);
+  	if (!lobby || !req.session.user) return res.redirect('/vote/join');
+
+  	const userId = req.session.user.id;
+  	const isHost = lobby.createdBy === userId;
+  	const everyoneReady = (lobby.users || []).length > 0 && lobby.users.every(u => u.ready);
+
+  	if (!isHost || !everyoneReady) {
+    	return res.redirect(`/vote/lobby?code=${encodeURIComponent(code)}`);
+  	}
+
+  	return res.redirect(`/vote/choices?code=${encodeURIComponent(code)}`);
 });
 
 

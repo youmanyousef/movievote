@@ -2,21 +2,72 @@
 
 <h1>Lobby: <%= code %></h1>
 
-<input type="text" name="code" value="1234" disabled> 
+<input type="text" value="<%= code %>" disabled>
 <button>Copy code</button> 
 <br>
+
 <span>User List:</span> <br>
 <ul>
-    <% if (lobby.users.length === 0) { %>
+    <% if (!lobby.users || lobby.users.length === 0) { %>
         <li>No users yet</li>
     <% } else { %>  
         <% lobby.users.forEach(u => { %>
-            <li><%= u %></li>
+            <li>
+                <%= u.username %>
+                <% if (u.id === lobby.createdBy) { %> (HOST) <% } %>
+                <%= u.ready ? "READY" : "NOT READY" %>
+                <% if (u.id === currentUserId) { %> (you) <% } %>
+            </li>
         <% }) %>
     <% } %>
 
 </ul> <br>
 
-<button>Leave</button>
-<button disabled>GO!</button>
+<form action="/vote/lobby/ready" method="POST">
+    <input type="hidden" name="code" value="<%= code %>">
+
+    <% const me = (lobby.users || []).find(u => u.id === currentUserId); %>
+    <button type="submit">
+        <%= me && me.ready ? "Unready" : "Ready Up" %>
+    </button>
+</form>
+
+<a href="/vote/home"><button type="button">Leave</button></a>
+
+<% if (isHost){ %>
+    <form action="/vote/lobby/start" method="POST" style="display:inline;">
+        <input type="hidden" name="code" value="<%= code %>">
+        <button type="submit" <%= everyoneReady ? "" : "disabled" %>>
+            GO!
+        </button>
+    </form>
+
+    <% if (!everyoneReady) { %>
+        <p>Waiting for everyone to ready up…</p>
+    <% } %>
+    <% } else { %>
+        <button type="button" disabled>Waiting for host…</button>
+    <% } %>
+
+    <script>
+	(function () {
+		const code = "<%= code %>";
+
+		async function checkReady() {
+			try{
+				const res = await fetch(`/vote/lobby/status?code=${encodeURIComponent(code)}`);
+				if (!res.ok) return;
+
+				const data = await res.json();
+				if (data.everyoneReady){
+					window.location.href = `/vote/choices?code=${encodeURIComponent(code)}`;
+				}
+			}catch (e) {}
+		}
+
+		setInterval(checkReady, 2000);
+		checkReady();
+	})();
+</script>
+    
 <%- include('../partials/footer') %>

@@ -5,13 +5,13 @@
 	<small> Create a code to share with friends!</small>
 	<br><br>
 
-	<input type="checkbox" id="enableShows" value="Shows">
+	<input type="checkbox" id="enableShows" name="enableShows" value="1">
 	<label for="enableShows">Enable Shows?</label><br>
 
-	<input type="checkbox" id="enableMovies" value="Movies">
+	<input type="checkbox" id="enableMovies" name="enableMovies" value="1">
 	<label for="enableMovies">Enable Movies?</label><br>
 
-	<input type="checkbox" id="setTimer" value="TimeSet">
+	<input type="checkbox" id="setTimer" name="setTimer" value="1">
 	<label for="setTimer">Enable a time limit during the voting phase?</label><br>
 	<input hidden id="setTimerValue"> <br>
 
@@ -20,4 +20,5 @@
 
 	<input type="submit" value="Submit">
 </form>
+
 <%- include('../partials/footer') %>
