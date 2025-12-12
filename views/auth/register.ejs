@@ -11,10 +11,11 @@
       
       <div class="form-group">
         <label for="username">Username</label>
-        <input 
-          type="text" 
-          id="username" 
-          name="username" 
+        <input
+          type="text"
+          class="form-input"
+          id="username"
+          name="username"
           value="<%= typeof formData !== 'undefined' ? formData.username || '' : '' %>"
           placeholder="Choose a username (3-20 characters)"
           required
@@ -22,24 +23,26 @@
           maxlength="20"
         >
       </div>
-      
+
       <div class="form-group">
         <label for="email">Email Address</label>
-        <input 
-          type="email" 
-          id="email" 
+        <input
+          type="email"
+          class="form-input"
+          id="email"
           name="email"
           value="<%= typeof formData !== 'undefined' ? formData.email || '' : '' %>"
           placeholder="Enter your email address"
           required
         >
       </div>
-      
+
       <div class="form-group">
         <label for="password">Password</label>
-        <input 
-          type="password" 
-          id="password" 
+        <input
+          type="password"
+          class="form-input"
+          id="password"
           name="password"
           placeholder="Create a password (min 8 characters)"
           required
@@ -49,12 +52,13 @@
           Password must include at least 8 characters with 1 uppercase letter, 1 lowercase letter, and 1 number.
         </div>
       </div>
-      
+
       <div class="form-group">
         <label for="confirmPassword">Confirm Password</label>
-        <input 
-          type="password" 
-          id="confirmPassword" 
+        <input
+          type="password"
+          class="form-input"
+          id="confirmPassword"
           name="confirmPassword"
           placeholder="Enter your password again"
           required
@@ -62,7 +66,7 @@
       </div>
       
       <div class="form-actions">
-        <button type="submit" class="btn primary-btn">Register</button>
+        <button type="submit" class="btn btn-primary">Register</button>
       </div>
     </form>
     

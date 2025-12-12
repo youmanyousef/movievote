@@ -1,1 +1,55 @@
 /* Register Page Specific Styles */
+
+.auth-form {
+    background-color: #16213e;
+    border-radius: 12px;
+    padding: 40px 35px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    max-width: 450px;
+    width: 100%;
+}
+
+.auth-form h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 30px;
+    text-align: left;
+    color: #ffffff;
+}
+
+.form-hint {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: #a0a0a0;
+    line-height: 1.4;
+}
+
+.auth-form .form-footer {
+    margin-top: 24px;
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.auth-form .form-footer p {
+    color: #a0a0a0;
+    font-size: 0.95rem;
+}
+
+.auth-form .form-footer a {
+    color: #e94560;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-form .form-footer a:hover {
+    color: #d63651;
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .auth-form {
+        padding: 30px 25px;
+    }
+}
