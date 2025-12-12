@@ -4,6 +4,43 @@
 const express = require('express');
 const router = express.Router();
 const Lobby = require('../models/lobby');
+const tmbd = require('../services/tmbd');
+
+/// ---- This Route is for the TMBD API ---- ///
+router.get('/api/search', async (req, res) => {
+	const query = (req.query.q || '').trim();
+
+	// if no results is found, return empty array
+	if (!query.trim()){
+		return res.json({ results: [], total_results: 0 });
+	}
+	
+	try {
+		const data = await tmbd.searchMovies(query);
+
+		// Formating response array
+		const results = data.results.map(movie => ({
+              id: movie.id,
+              title: movie.title,
+              poster_path: movie.poster_path,
+              poster_url: tmdb.getPosterUrl(movie.poster_path),
+              release_date: movie.release_date,
+              overview: movie.overview
+          }));
+
+		return res.json({ results, total_results: data.total_results } );
+	}
+
+	// does for any errors
+	catch (error) {
+          console.error('Search error:', error);
+          res.status(500).json({ error: 'Search failed' });
+      }
+  });
+	
+/// --------------------------------------- ///
+
+
 
 router.get('/', (req, res) => {
 	console.log('hi');
