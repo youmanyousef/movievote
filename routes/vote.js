@@ -4,7 +4,7 @@
 const express = require('express');
 const router = express.Router();
 const Lobby = require('../models/lobby');
-const tmbd = require('../services/tmbd');
+const tmdb = require('../services/tmdb');
 
 /// ---- This Route is for the TMBD API ---- ///
 router.get('/api/search', async (req, res) => {
@@ -16,7 +16,7 @@ router.get('/api/search', async (req, res) => {
 	}
 	
 	try {
-		const data = await tmbd.searchMovies(query);
+		const data = await tmdb.searchMovies(query);
 
 		// Formating response array
 		const results = data.results.map(movie => ({
@@ -130,6 +130,14 @@ router.get('/result', (req, res) => {
 });
 
 router.get('/choices', async (req, res) => {
+	// TESTING MODE: Skip all lobby checks
+	res.render('vote/choices', {
+		title: 'Choose',
+		code: 'TEST',
+		lobby: {}
+	});
+
+	/* ORIGINAL CODE - Uncomment when done testing
 	const code = (req.query.code || '').trim().toUpperCase();
   	const lobby = await Lobby.get(code);
 
@@ -141,11 +149,12 @@ router.get('/choices', async (req, res) => {
 		return res.redirect(`/vote/lobby?code=${encodeURIComponent(code)}`);
 	}
 
-	res.render('vote/choices', { 
+	res.render('vote/choices', {
 		title: 'Choose',
 		code,
 		lobby
 	});
+	*/
 });
 
 router.get('/wait', (req, res) => {

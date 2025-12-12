@@ -1,12 +1,50 @@
-<%- include('../partials/header') %>
-<form action="?">
-	<span>Add Choices!</span>
-	<!-- add the api with a visual search card system? -->
-	<!-- if not have it be a type/dropdown system -->
-	<input type="text" id="movie" name="Movie" list="moviename">
-	<datalist id="moviename">
-		<option value="Movie 1">
-		<option value="Show 2">
-	</datalist>
-</form>
-<%- include('../partials/footer') %>
+
+  <%- include('../partials/header') %>
+
+  <div class="container">
+      <div class="card">
+          <h1 class="page-title">Select 5 Movies</h1>
+
+          <!-- ═══════════════════════════════════════════ -->
+          <!-- SEARCH BOX -->
+          <!-- ═══════════════════════════════════════════ -->
+          <div class="form-group">
+              <input
+                  type="text"
+                  id="movie-search"
+                  class="form-input"
+                  placeholder="Search for movies..."
+                  autocomplete="off"
+              >
+              <p id="selection-message" class="selection-message">Select 5 movies to continue</p>
+          </div>
+
+          <!-- ═══════════════════════════════════════════ -->
+          <!-- SEARCH RESULTS -->
+          <!-- ═══════════════════════════════════════════ -->
+          <div id="search-results" class="search-results"></div>
+
+          <!-- ═══════════════════════════════════════════ -->
+          <!-- SELECTED MOVIES -->
+          <!-- ═══════════════════════════════════════════ -->
+          <div class="selected-section">
+              <h3>Selected Movies (<span id="count">0</span>/5)</h3>
+              <div id="selected-movies" class="selected-movies"></div>
+          </div>
+
+          <!-- ═══════════════════════════════════════════ -->
+          <!-- START VOTING BUTTON -->
+          <!-- ═══════════════════════════════════════════ -->
+          <button
+              id="start-voting-btn"
+              class="btn btn-primary"
+              onclick="startVoting()"
+              disabled
+          >
+              Start Voting
+          </button>
+      </div>
+  </div>
+
+  <script src="/javascripts/vote-search.js"></script>
+  <%- include('../partials/footer') %>
