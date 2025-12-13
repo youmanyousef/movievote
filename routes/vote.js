@@ -232,15 +232,18 @@ router.post('/lobby/leave', async (req, res) => {
 		return res.redirect('/vote/join');
 	}
 	
-	
-	
   	const lobby = await Lobby.get(code);
   	if (!lobby || !req.session.user) return res.redirect('/vote/join');
 
   	const userId = req.session.user.id;
-	// add in edge case for host // const isHost = lobby.createdBy === userId;
+	const isHost = lobby.createdBy === userId;
 	
-	const temp = await Lobby.userLeave(code, userId);
+	// add in edge case for host // const isHost = lobby.createdBy === userId;
+	if (isHost) {
+		await Lobby.destroy(code);
+	} else {
+		await Lobby.userLeave(code, userId);
+	}
 	return res.redirect('/vote');
 });
 

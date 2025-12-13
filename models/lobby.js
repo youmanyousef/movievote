@@ -15,7 +15,7 @@ async function get(code) {
 }
 
 async function userLeave(code, userID) {
-	let lobby = lobbies.get(code)
+	let lobby = lobbies.get(code);
 	let users = await lobby.users;
 	let user = undefined;
 	for (const uid of users) {
@@ -34,10 +34,15 @@ async function userLeave(code, userID) {
 	lobbies.set(code, lobby);
 }
 
+async function destroy(code) {
+	return lobbies.delete(code);
+}
+
 
 module.exports = { 
     exists, 
     create, 
     get,
-	userLeave
+	userLeave,
+	destroy
 };
