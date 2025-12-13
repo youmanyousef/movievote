@@ -213,8 +213,8 @@ router.post('/wait', async (req, res) => {
 	console.log("**")
 	console.log(lobby.users.find(u => u.id === userId));
 	
-	res.render('vote/wait', { 
-		title: 'Waiting...',
+	res.render('vote/vote', { 
+		title: 'Rank...',
 		code: code,
 		act: act,
 		message: 'Welcome to the Authentication Template'
