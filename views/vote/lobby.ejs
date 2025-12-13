@@ -32,6 +32,7 @@
     </button>
 </form>
 
+
 <form action="/vote/lobby/leave" method="POST">
 	<input type="hidden" name="code" value="<%= code %>">
 	<button type="submit">Leave</button>
@@ -39,12 +40,19 @@
 
 <% if (isHost){ %>
     <p>Once everyone is ready voting will begin!</p>
-
+	<form action="/vote/lobby/start" method="POST">
+		<input type="hidden" name="code" value="<%= code %>">
+		<button disabled id="startChoices" type="submit">START!</button>
+	</form> 
     <% if (!everyoneReady) { %>
         <p>Waiting for everyone to ready up…</p>
+		
+		
     <% } %>
     <% } else { %>
         <button type="button" disabled>Waiting for host…</button>
+				
+		
     <% } %>
 
     <script>
@@ -58,7 +66,9 @@
 
 				const data = await res.json();
 				if (data.everyoneReady){
-					window.location.href = `/vote/choices?code=${encodeURIComponent(code)}`;
+					//window.location.href = `/vote/choices?code=${encodeURIComponent(code)}`;
+					let btn = document.getElementById("startChoices");
+					btn.disabled = btn.enabled;
 				}
 			}catch (e) {}
 		}

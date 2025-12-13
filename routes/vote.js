@@ -54,7 +54,7 @@ router.get('/create', (req, res) => {
 		title: 'Create',
 		message: 'Welcome to the Authentication Template'
 	});
-});
+}); 
 
 router.get('/join', (req, res) => {
     res.render('vote/join', { 
@@ -72,6 +72,13 @@ router.get('/lobby', async (req, res) => {
 		return res.status(404).render('vote/join', {
 			title: 'Join',
 			message: 'Lobby code not found. Create one first.'
+		});
+	}
+	
+	if (lobby.lobbyStatus != "start") {
+		return res.status(404).render('vote/join', {
+			title: 'Join',
+			message: 'Lobby started voting... please wait for them to finish or join another session.'
 		});
 	}
 
@@ -185,6 +192,7 @@ router.post('/create', async (req, res) => {
     	enableShows: !!req.body.enableShows,
     	enableMovies: !!req.body.enableMovies,
     	setTimer: !!req.body.setTimer,
+		lobbyStatus: "start",
     	choicesPerUser: Number(req.body.choicesPerUser || 0)
   });
 
@@ -193,10 +201,12 @@ router.post('/create', async (req, res) => {
 });
 
 router.post('/lobby/ready', async (req, res) => {
+	
 	const code = (req.body.code || '').trim().toUpperCase();
   	if (!code) return res.redirect('/vote/join');
 		
 	const lobby = await Lobby.get(code);
+	console.log(lobby);
 	if (!lobby || !req.session.user) return res.redirect('/vote/join');
 
 	const userId = req.session.user.id;
@@ -208,7 +218,7 @@ router.post('/lobby/ready', async (req, res) => {
 });
 
 router.post('/lobby/start', async (req, res) => {
-	 
+	console.log('start')
   	const code = (req.body.code || '').trim().toUpperCase();
   	if (!code) return res.redirect('/vote/join');
 
@@ -222,7 +232,8 @@ router.post('/lobby/start', async (req, res) => {
   	if (!isHost || !everyoneReady) {
     	return res.redirect(`/vote/lobby?code=${encodeURIComponent(code)}`);
   	}
-
+	//lobby.lobbyStatus = "voting";
+	//console.log(lobby); 
   	return res.redirect(`/vote/choices?code=${encodeURIComponent(code)}`);
 });
 
