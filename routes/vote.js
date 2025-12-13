@@ -37,6 +37,144 @@ router.get('/api/search', async (req, res) => {
           res.status(500).json({ error: 'Search failed' });
       }
   });
+
+router.get('/api/results', async (req, res) => {
+	const code = (req.query.code || '').trim().toUpperCase();
+	if (!code){
+		return res.status(400).json({ ok: false, error: 'Missing code' });
+	}
+
+	const lobby = await Lobby.get(code);
+	if (!lobby || !Array.isArray(lobby.users)) {
+		return res.status(404).json({ ok: false, error: 'Lobby not found' });
+	}
+
+	try{
+		const movieIdSet = new Set();
+		for (const u of lobby.users) {
+			for (const id of (Array.isArray(u.choices) ? u.choices : [])) {
+				const s = String(id).trim();
+				if (s) movieIdSet.add(s);
+			}
+		}
+	
+		const movieIds = Array.from(movieIdSet);
+		if (movieIds.length === 0) {
+			return res.json({
+				ok: true,
+				resultsObject: {
+					stats: { isTie: false, totalMovies: 0, totalVoters: lobby.users.length, highestScore: 0, averageScore: 0 },
+					winners: [],
+					results: []
+				}
+			});
+		}
+
+		const detailsById = new Map();
+		for (const idStr of movieIds) {
+			const idNum = Number(idStr);
+			if (!Number.isFinite(idNum)) continue;
+
+			const details = await tmdb.getMovieDetails(idNum);
+			detailsById.set(idStr, {
+				id: idNum,
+				title: details?.title || details?.name || 'Unknown',
+				posterUrl: tmdb.getPosterUrl(details?.poster_path),
+			});
+		}
+		let totalRatingsCount = 0;
+		let totalRatingsSum = 0;
+
+		const results = movieIds.map((idStr) => {
+			const meta = detailsById.get(idStr) || {
+			id: Number(idStr),
+			title: 'Unknown',
+			posterUrl: '/images/placeholder.jpg'
+		};
+
+		const votes = {};
+		let sum = 0;
+		let count = 0;
+
+		for (const u of lobby.users) {
+			const v = u?.votes?.[idStr];
+			const rating = Number(v);
+			if (Number.isFinite(rating)) {
+				votes[u.username || `user_${u.id}`] = rating;
+				sum += rating;
+				count += 1;
+			}
+		}
+
+		totalRatingsSum += sum;
+		totalRatingsCount += count;
+
+		return {
+			id: meta.id,
+			title: meta.title,
+			posterUrl: meta.posterUrl,
+			totalScore: sum,
+			avgRating: count ? (sum / count) : 0,
+			votes
+		};
+	});
+
+		const highestScore = results.reduce((mx, m) => Math.max(mx, m.totalScore), 0);
+		const winners = results.filter(m => m.totalScore === highestScore);
+		const averageScore = totalRatingsCount ? (totalRatingsSum / totalRatingsCount) : 0;
+		const resultsObject = {
+			stats: {
+				isTie: winners.length > 1,
+				totalMovies: results.length,
+				totalVoters: lobby.users.length,
+				highestScore,
+				averageScore
+			},
+			winners,
+			results
+		}
+		return res.json({ ok: true, resultsObject });
+	}catch(error){
+		console.error(error);
+		return res.status(500).json({ ok:false, error:'Results failed' });
+	}
+});
+
+router.get('/api/choices', async (req, res) => {
+	const code = (req.query.code || '').trim().toUpperCase();
+	if (!code) return res.status(400).json({ error: 'Missing code' });
+
+	const lobby = await Lobby.get(code);
+	if (!lobby) return res.status(404).json({ error: 'Lobby not found' });
+
+	if (!Array.isArray(lobby.users)) lobby.users = [];
+
+	try{
+		const movies = [];
+
+		for (const user of lobby.users){
+			const choices = Array.isArray(user.choices) ? user.choices : [];
+
+			for (const rawId of choices) {
+				const id = Number(rawId);
+				if (!Number.isFinite(id)) continue;
+				const details = await tmdb.getMovieDetails(id);
+
+				movies.push({
+					id,
+					title: details?.title || details?.name || 'Unknown',
+					posterUrl: tmdb.getPosterUrl(details?.poster_path),
+					addedBy: user.username
+				})
+			}
+		}
+		return res.json({ ok: true, code, movies });
+	}
+	catch (error) {
+			console.error('Api/choices error:', error);
+			res.status(500).json({ error: 'Choices failed' });
+		}
+  });
 	
 /// --------------------------------------- ///
 
@@ -128,8 +266,11 @@ router.get('/lobby/status', async (req, res) => {
 
 
 router.get('/vote', (req, res) => {
+	const code = (req.query.code || '').trim().toUpperCase();
+
     res.render('vote/vote', { 
 		title: 'Vote',
+		code,
 		message: 'Welcome to the Authentication Template'
 	});
 });
@@ -142,7 +283,7 @@ router.get('/result', (req, res) => {
 });
 
 router.get('/choices', async (req, res) => {
-	const code = (req.body.code || '').trim().toUpperCase();
+	const code = (req.query.code || '').trim().toUpperCase();
 	console.log("ping");
   	if (!code) return res.redirect('/vote/join');
 
@@ -151,7 +292,8 @@ router.get('/choices', async (req, res) => {
 	
 	res.render('vote/choices', {
 		title: 'Choose',
-		code: code
+		code,
+		choicesPerUser: lobby.choicesPerUser
 	});
 });
 
@@ -166,10 +308,65 @@ router.get('/choices', async (req, res) => {
 	});
 });  */
 
+router.get('/wait/results', (req, res) => {
+	const code = (req.query.code || '').trim().toUpperCase();
+
+	return res.render('vote/wait', {
+		title: 'Waiting...',
+		code,
+		pollUrl: '/vote/wait/votes',
+		nextUrl: '/vote/result'
+	});
+});
+
+router.get('/wait/rank', (req, res) => {
+	const code = (req.query.code || '').trim().toUpperCase();
+
+	res.render('vote/wait', { 
+		title: 'Waiting...',
+		code,
+		pollUrl: '/vote/wait/choices',
+		nextUrl: '/vote/vote'
+	});
+}); 
+
+router.post('/api/submit-votes', async (req, res) => {
+	const code = ((req.body.code || '').toString() || '').trim().toUpperCase();
+	if (!code){
+		return res.status(400).json({ok:false, error: 'Missing code' });
+	}
+
+	if (!req.session?.user){
+		return res.status(401).json({ok:false, error: 'Not logged in' });
+	}
+	const lobby = await Lobby.get(code);
+	if (!lobby || !Array.isArray(lobby.users)) {
+		return res.status(404).json({ok:false, error:'Lobby not Found' });
+	}
+
+	const me = lobby.users.find(u => u.id === req.session.user.id);
+	if (!me){
+		return res.status(403).json({ ok:false, error: 'Not in lobby' });
+	}
+
+	const votes = req.body.votes;
+	if (!votes || typeof votes !== 'object'){
+		return res.status(400).json({ok:false, error: 'Missing votes' });
+	}
+
+	  
+	me.votes = votes;
+	return res.json({ ok: true })
+
+});
+
 router.post('/wait/choices', async (req, res) => {
 	console.log("ping choices");
-	const code = ((req.body.code).toString() || '').trim().toUpperCase();
+	const code = ((req.body.code || '').toString() || '').trim().toUpperCase();
   	const lobby = await Lobby.get(code);
+	if (!lobby || !Array.isArray(lobby.users)) {
+		return res.status(404).json({ message: false });
+	}
 	console.log(code);
 	console.log(lobby);
 	const userCount = lobby.users.length;
@@ -177,20 +374,13 @@ router.post('/wait/choices', async (req, res) => {
 	for (const user of lobby.users) {
 		console.log(user);
 		
-		if (userChoicesArr.length === 5) { //hard coded!!
+		if (Array.isArray(user.choices) && user.choices.length === lobby.choicesPerUser) { //hard coded!!
 			usersReady += 1;
 		}
 	}
 	
 	res.status(200).json({
 		message: userCount === usersReady
-	});
-}); 
-
-router.get('/wait/rank', (req, res) => {
-	res.render('vote/wait', { 
-		title: 'Waiting...',
-		message: 'Welcome to the Authentication Template'
 	});
 }); 
 
@@ -213,13 +403,28 @@ router.post('/wait', async (req, res) => {
 	console.log("**")
 	console.log(lobby.users.find(u => u.id === userId));
 	
-	res.render('vote/vote', { 
-		title: 'Rank...',
-		code: code,
-		act: act,
-		message: 'Welcome to the Authentication Template'
-	});
+	return res.redirect(`/vote/wait/rank?code=${encodeURIComponent(code)}`);
 }); 
+
+router.post('/wait/votes', async (req, res) => {
+	const code = ((req.body.code || '').toString() || '').trim().toUpperCase();
+	const lobby = await Lobby.get(code);
+
+	if (!lobby || !Array.isArray(lobby.users)) {
+		return res.status(404).json({ message: false });
+	}
+
+	const movieIds = new Set();
+	for (const u of lobby.users) {
+		for (const id of (Array.isArray(u.choices) ? u.choices : [])) {
+			movieIds.add(String(id));
+		}
+	}
+	const needed = movieIds.size;
+	const allVoted = lobby.users.length > 0 && lobby.users.every(u => u.votes && Object.keys(u.votes).length === needed);
+
+	return res.json({ message: allVoted });
+});
 
 router.post('/create', async (req, res) => {
   	const code = (req.body.code || '').trim().toUpperCase();
@@ -244,7 +449,7 @@ router.post('/create', async (req, res) => {
     	enableMovies: !!req.body.enableMovies,
     	setTimer: !!req.body.setTimer,
 		lobbyStatus: "start",
-    	choicesPerUser: Number(req.body.choicesPerUser || 0)
+    	choicesPerUser: Math.max(1, Number(req.body.choicesPerUser) || 5)
   });
 
   return res.redirect(`/vote/lobby?code=${encodeURIComponent(code)}`);
@@ -288,7 +493,8 @@ router.post('/lobby/start', async (req, res) => {
 	console.log(lobby); 
   	res.render('vote/choices', {
 		title: 'Choose',
-		code: code
+		code: code,
+		choicesPerUser: lobby.choicesPerUser
 	});
 });
 

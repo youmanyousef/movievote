@@ -1,5 +1,6 @@
 // This is all the js for the voting search page
 let searchTimeout = null;
+const MAX_CHOICES = Number(document.querySelector('[data-choices-per-user]')?.dataset.choicesPerUser) || 5;
 const searchInput = document.getElementById('movie-search');
 const searchResults = document.getElementById('search-results');
 const selectedMovies = document.getElementById('selected-movies');
@@ -61,8 +62,8 @@ function addMovie(id, title, posterUrl) {
     }
 
     // checking if more than 5 movies are selected; to not add more
-    if (selected.length >= 5) {
-        alert('You can only select up to 5 movies.');
+    if (selected.length >= MAX_CHOICES) {
+        alert(`You can only select up to ${MAX_CHOICES} movies.`);
         return;
     }
     
@@ -91,7 +92,7 @@ function displaySelectedMovies() {
 
       // Update selection message
       const message = document.getElementById('selection-message');
-      const remaining = 5 - selected.length;
+      const remaining = MAX_CHOICES - selected.length;
       if (message) {
           if (remaining === 0) {
               message.textContent = 'Ready to start voting!';
@@ -109,15 +110,12 @@ function displaySelectedMovies() {
       const startBtn = document.getElementById('start-voting-btn');
 	  const userChoices = document.getElementById('userChoices');
       if (startBtn) {
-		  let userChoicesQueryString = "";
-		  const firstMovie = selected[0];
-		  userChoicesQueryString += firstMovie.id;
-		  for (let idx = 1; idx < selected.length; idx++ ) {
-			userChoicesQueryString += '|' + selected[idx].id;
-		  }
-		  userChoices.value = userChoicesQueryString;
-          startBtn.disabled = selected.length !== 5;
-		  
+		  if (userChoices) {
+            userChoices.value = selected.map(m => m.id).join('|');
+          }
+          startBtn.disabled = selected.length !== MAX_CHOICES;
+
+		
       }
 }
 
@@ -135,8 +133,8 @@ function escapeHtml(text) {
 }
 
 async function submitVote() {
-    if (selected.length !== 5) {
-        alert('Please select exactly 5 movies before starting the vote.');
+    if (selected.length !== MAX_CHOICES) {
+        alert(`Please select exactly ${MAX_CHOICES} movies before starting the vote.`);
         return;
     }
     const code = new URLSearchParams(window.location.search).get('code');

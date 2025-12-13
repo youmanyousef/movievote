@@ -3,10 +3,36 @@
 // ═══════════════════════════════════════════════════════════════
 
 // Initialize everything on page
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    const resultsList = document.getElementById('results-list');
+    const params = new URLSearchParams(window.location.search);
+    const code = (params.get('code') || '').trim().toUpperCase();
+
+    if (!code) {
+        resultsList.textContent = 'Missing lobby code.';
+        return;
+    }
+
+    let data;
+    try{
+        const res = await fetch(`/vote/api/results?code=${encodeURIComponent(code)}`);
+        data = await res.json();
+    }catch(error){
+        console.error(error);
+        resultsList.textContent = 'Failed to load picks.';
+        return;
+    }
+    
+    if (!data?.ok || !data?.resultsObject) {
+        resultsList.textContent = data?.error || 'No results found.';
+        return;
+    }
+
+    window.dummyResults = data.resultsObject;
     renderTheWinners();
     renderStats();
     renderAllResults();
+
 });
 
 //===============================

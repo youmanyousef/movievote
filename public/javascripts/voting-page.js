@@ -1,9 +1,26 @@
 // this is the javascript for the voting page
 // {movieId: rating}
 const userVotes = {};
+let lobbyData = dummyLobby;
 
 // Initializing the voitng page
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    const code = (new URLSearchParams(window.location.search).get('code') || '').trim().toUpperCase();
+    if(code){
+        try{
+            const res = await fetch(`/vote/api/choices?code=${encodeURIComponent(code)}`);
+            const data = await res.json();
+
+            if(data.ok){
+                lobbyData = {
+                    users: [],
+                    movies: data.movies
+                }
+            }
+        }catch(error){
+            console.error('Failed to load choices', error);
+        }
+    }
     renderMovie();
     updateProgress();
 });
@@ -18,14 +35,14 @@ function renderMovie() {
     //===============================
     // FETCH FORM SERVER
     //===============================
-    totalCount.textContent = dummyLobby.movies.length;
+    totalCount.textContent = lobbyData.movies.length;
 
-    grid.innerHTML = dummyLobby.movies.map(movie => `
+    grid.innerHTML = lobbyData.movies.map(movie => `
         <div class="voting-movie-card" id="movie-${movie.id}">
               <img src="${movie.posterUrl}" alt="${escapeHtml(movie.title)}" loading="lazy">
               <div class="movie-voting-info">
                   <h4 class="movie-title">${escapeHtml(movie.title)}</h4>
-                  <p class="added-by">Added by ${getUsernameById(movie.addedBy)}</p>
+                  <p class="added-by">Added by ${escapeHtml(movie.addedBy)}</p>
                   <div class="rating-controls">
                       <button class="btn-minus" onclick="changeRating(${movie.id}, -1)">−</button>
                       <span class="rating-display" id="rating-${movie.id}">-</span>
@@ -76,7 +93,7 @@ function updateRatingDisplay(movieId) {
 // Progress for voting
 //===============================
 function updateProgress() {
-    const totalMovies = dummyLobby.movies.length;
+    const totalMovies = lobbyData.movies.length;
     const ratedCount = Object.keys(userVotes).length;
     const percentDone = (ratedCount / totalMovies) * 100;
 
@@ -101,8 +118,9 @@ function updateProgress() {
 //===============================
 
 async function submitVotes() {
-    const totalMovies = dummyLobby.movies.length;
+    const totalMovies = lobbyData.movies.length;
     const ratedCount = Object.keys(userVotes).length;
+    const code = (new URLSearchParams(window.location.search).get('code') || '').trim().toUpperCase();
 
     // verify all movies are rated
     if (ratedCount !== totalMovies) {
@@ -112,16 +130,21 @@ async function submitVotes() {
 
     console.log('Charlie\'s votes:', userVotes);
 
-    // TODO: Send votes to backend
-      // const code = new URLSearchParams(window.location.search).get('code');
-      // const response = await fetch('/vote/api/submit-votes', {
-      //     method: 'POST',
-      //     headers: { 'Content-Type': 'application/json' },
-      //     body: JSON.stringify({ code, votes: userVotes })
-      // });
+    const response = await fetch('/vote/api/submit-votes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, votes: userVotes })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+        alert(data?.error || "Failed to submit votes.");
+        return;
+    }
 
     // Redirect to results page
-    window.location.href = '/vote/result';
+    window.location.href = `/vote/wait/results?code=${encodeURIComponent(code)}`;
 }
 
 //===============================

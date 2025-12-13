@@ -1,9 +1,10 @@
 
   <%- include('../partials/header') %>
 
-  <div class="container">
+  <div class="container" data-choices-per-user="<%= (typeof choicesPerUser !== 'undefined' ? choicesPerUser : 5) %>">
       <div class="card">
-          <h1 class="page-title">Select 5 Movies</h1>
+          <h1 class="page-title">Select <%= (typeof choicesPerUser !== 'undefined' ? choicesPerUser : 5) %> Movies</h1>
+
 
           <!-- ═══════════════════════════════════════════ -->
           <!-- SEARCH BOX -->
@@ -16,7 +17,8 @@
                   placeholder="Search for movies..."
                   autocomplete="off"
               >
-              <p id="selection-message" class="selection-message">Select 5 movies to continue</p>
+              <p id="selection-message" class="selection-message">Select <%= (typeof choicesPerUser !== 'undefined' ? choicesPerUser : 5) %> movies to continue</p>
+
           </div>
 
           <!-- ═══════════════════════════════════════════ -->
@@ -28,7 +30,7 @@
           <!-- SELECTED MOVIES -->
           <!-- ═══════════════════════════════════════════ -->
           <div class="selected-section">
-              <h3>Selected Movies (<span id="count">0</span>/5)</h3>
+              <h3>Selected Movies (<span id="count">0</span>/<%= (typeof choicesPerUser !== 'undefined' ? choicesPerUser : 5) %>)</h3>
               <div id="selected-movies" class="selected-movies"></div>
           </div>
 
@@ -38,7 +40,7 @@
 		  <form action="/vote/wait" method="POST">
 			  <input type="hidden" name="code" value="<%= code %>">
 			  <input type="hidden" name="act" value="choice">
-			  <input id="userChoices" name="userChoices" value=""> 
+			  <input type="hidden" id="userChoices" name="userChoices" value=""> 
 			  <button
 				  id="start-voting-btn"
 				  class="btn btn-primary"
@@ -51,5 +53,5 @@
       </div>
   </div>
 
-  <script src="/javascripts/vote-search.js"></script>
-  <%- include('../partials/footer') %>
+<script src="/javascripts/vote-search.js"></script>
+<%- include('../partials/footer') %>
