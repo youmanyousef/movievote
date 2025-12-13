@@ -75,26 +75,32 @@ router.get('/lobby', async (req, res) => {
 		});
 	}
 	
-	if (lobby.lobbyStatus != "start") {
+	
+
+	if (!req.session.user) return res.redirect('/auth/login');
+
+	const userId = req.session.user.id;
+	const username = req.session.user.username;
+	let allUserIds = [];
+	for (user in lobby.users) {
+		allUserIds.push(user.id);
+	}
+	if (lobby.lobbyStatus != "start" && !allUserIds.includes(userId)) {
 		return res.status(404).render('vote/join', {
 			title: 'Join',
 			message: 'Lobby started voting... please wait for them to finish or join another session.'
 		});
 	}
+	
 
-	if (!req.session.user) return res.redirect('/auth/login');
+	if (!Array.isArray(lobby.users)) lobby.users = [];
 
-		const userId = req.session.user.id;
-  		const username = req.session.user.username;
+	if (!lobby.users.some(u => u.id === userId)) {
+		lobby.users.push({ id: userId, username, ready: false, choices: []});
+	}
 
-		if (!Array.isArray(lobby.users)) lobby.users = [];
-
-  		if (!lobby.users.some(u => u.id === userId)) {
-  			lobby.users.push({ id: userId, username, ready: false });
-		}
-
-		const isHost = lobby.createdBy === userId;
-		const everyoneReady = lobby.users.length > 0 && lobby.users.every(u => u.ready);
+	const isHost = lobby.createdBy === userId;
+	const everyoneReady = lobby.users.length > 0 && lobby.users.every(u => u.ready);
 
     return res.render('vote/lobby', { 
 		title: 'Lobby',
@@ -136,36 +142,81 @@ router.get('/result', (req, res) => {
 });
 
 router.get('/choices', async (req, res) => {
-	// TESTING MODE: Skip all lobby checks
-	res.render('vote/choices', {
-		title: 'Choose',
-		code: 'TEST',
-		lobby: {}
-	});
+	const code = (req.body.code || '').trim().toUpperCase();
+	console.log("ping");
+  	if (!code) return res.redirect('/vote/join');
 
-	/* ORIGINAL CODE - Uncomment when done testing
-	const code = (req.query.code || '').trim().toUpperCase();
   	const lobby = await Lobby.get(code);
-
-	if (!lobby) return res.redirect('/vote/join');
-
-	const everyoneReady = (lobby.users || []).length > 0 && lobby.users.every(u => u.ready);
-
-	if (!everyoneReady) {
-		return res.redirect(`/vote/lobby?code=${encodeURIComponent(code)}`);
-	}
-
+  	if (!lobby || !req.session.user) return res.redirect('/vote/join');
+	
 	res.render('vote/choices', {
 		title: 'Choose',
-		code,
-		lobby
+		code: code
 	});
-	*/
 });
 
-router.get('/wait', (req, res) => {
+/* router.post('/wait', async (req, res) => {
+	const code = (req.body.code || '').trim().toUpperCase();
+  	const lobby = await Lobby.get(code);
 	res.render('vote/wait', { 
 		title: 'Waiting...',
+		code: code,
+		act: "
+		message: 'Welcome to the Authentication Template'
+	});
+});  */
+
+router.post('/wait/choices', async (req, res) => {
+	console.log("ping choices");
+	const code = ((req.body.code).toString() || '').trim().toUpperCase();
+  	const lobby = await Lobby.get(code);
+	console.log(code);
+	console.log(lobby);
+	const userCount = lobby.users.length;
+	let usersReady = 0;
+	for (const user of lobby.users) {
+		console.log(user);
+		
+		if (userChoicesArr.length === 5) { //hard coded!!
+			usersReady += 1;
+		}
+	}
+	
+	res.status(200).json({
+		message: userCount === usersReady
+	});
+}); 
+
+router.get('/wait/rank', (req, res) => {
+	res.render('vote/wait', { 
+		title: 'Waiting...',
+		message: 'Welcome to the Authentication Template'
+	});
+}); 
+
+router.post('/wait', async (req, res) => {
+	const code = (req.body.code || '').trim().toUpperCase();
+	console.log("ping")
+  	if (!code) return res.redirect('/vote/join');
+
+  	const lobby = await Lobby.get(code);
+  	if (!lobby || !req.session.user) return res.redirect('/vote/join');
+	
+	const act = req.body.act;
+	
+	const userChoices = req.body.userChoices;
+	const userChoicesArr = userChoices.split('|');
+	const userId = req.session.user.id;
+	const userData = lobby.users.find(u => u.id === userId);
+	userData.choices = userChoicesArr;
+	console.log(lobby);
+	console.log("**")
+	console.log(lobby.users.find(u => u.id === userId));
+	
+	res.render('vote/wait', { 
+		title: 'Waiting...',
+		code: code,
+		act: act,
 		message: 'Welcome to the Authentication Template'
 	});
 }); 
@@ -229,12 +280,16 @@ router.post('/lobby/start', async (req, res) => {
   	const isHost = lobby.createdBy === userId;
   	const everyoneReady = (lobby.users || []).length > 0 && lobby.users.every(u => u.ready);
 
-  	if (!isHost || !everyoneReady) {
+  	/*if (!isHost || !everyoneReady) {
+		console.log("--ping");
     	return res.redirect(`/vote/lobby?code=${encodeURIComponent(code)}`);
-  	}
-	//lobby.lobbyStatus = "voting";
-	//console.log(lobby); 
-  	return res.redirect(`/vote/choices?code=${encodeURIComponent(code)}`);
+  	}*/
+	// lobby.lobbyStatus = "choosing"; come back to this when i can fix this :(
+	console.log(lobby); 
+  	res.render('vote/choices', {
+		title: 'Choose',
+		code: code
+	});
 });
 
 router.post('/lobby/leave', async (req, res) => {

@@ -35,14 +35,19 @@
           <!-- ═══════════════════════════════════════════ -->
           <!-- START VOTING BUTTON -->
           <!-- ═══════════════════════════════════════════ -->
-          <button
-              id="start-voting-btn"
-              class="btn btn-primary"
-              onclick="startVoting()"
-              disabled
-          >
-              Start Voting
-          </button>
+		  <form action="/vote/wait" method="POST">
+			  <input type="hidden" name="code" value="<%= code %>">
+			  <input type="hidden" name="act" value="choice">
+			  <input id="userChoices" name="userChoices" value=""> 
+			  <button
+				  id="start-voting-btn"
+				  class="btn btn-primary"
+				  type="submit"
+				  disabled
+			  >
+				  Start Voting
+			  </button>
+		  </form>
       </div>
   </div>
 

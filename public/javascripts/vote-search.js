@@ -107,8 +107,17 @@ function displaySelectedMovies() {
 
       // Enable/disable button
       const startBtn = document.getElementById('start-voting-btn');
+	  const userChoices = document.getElementById('userChoices');
       if (startBtn) {
+		  let userChoicesQueryString = "";
+		  const firstMovie = selected[0];
+		  userChoicesQueryString += firstMovie.id;
+		  for (let idx = 1; idx < selected.length; idx++ ) {
+			userChoicesQueryString += '|' + selected[idx].id;
+		  }
+		  userChoices.value = userChoicesQueryString;
           startBtn.disabled = selected.length !== 5;
+		  
       }
 }
 
