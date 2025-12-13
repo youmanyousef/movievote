@@ -1,0 +1,58 @@
+// ═══════════════════════════════════════════════════════════════
+// DUMMY DATA FOR TESTING VOTING PAGE
+// ═══════════════════════════════════════════════════════════════
+
+const dummyLobby = {
+  code: "TEST123",
+  createdBy: "user_001",
+  status: "voting",
+
+  users: [
+    { id: "user_001", username: "Alice", ready: true },
+    { id: "user_002", username: "Bob", ready: true },
+    { id: "user_003", username: "Charlie", ready: true }
+  ],
+
+  movies: [
+    // Alice's picks
+    { id: 27205, title: "Inception", posterUrl: "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg", addedBy: "user_001" },
+    { id: 550, title: "Fight Club", posterUrl: "https://image.tmdb.org/t/p/w500/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg", addedBy: "user_001" },
+    { id: 13, title: "Forrest Gump", posterUrl: "https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg", addedBy: "user_001" },
+    { id: 155, title: "The Dark Knight", posterUrl: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg", addedBy: "user_001" },
+    { id: 278, title: "The Shawshank Redemption", posterUrl: "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg", addedBy: "user_001" },
+
+    // Bob's picks
+    { id: 680, title: "Pulp Fiction", posterUrl: "https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg", addedBy: "user_002" },
+    { id: 424, title: "Schindler's List", posterUrl: "https://image.tmdb.org/t/p/w500/sF1U4EUQS8YHUYjNl3pMGNIQyr0.jpg", addedBy: "user_002" },
+    { id: 389, title: "12 Angry Men", posterUrl: "https://image.tmdb.org/t/p/w500/ow3wq89wM8qd5X7hWKxiRfsFf9C.jpg", addedBy: "user_002" },
+    { id: 496243, title: "Parasite", posterUrl: "https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg", addedBy: "user_002" },
+    { id: 129, title: "Spirited Away", posterUrl: "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg", addedBy: "user_002" },
+
+    // Charlie's picks
+    { id: 120, title: "The Lord of the Rings", posterUrl: "https://image.tmdb.org/t/p/w500/v4MQ2lkIlFBpYGY75NfXZTKRX7h.jpg", addedBy: "user_003" },
+    { id: 122, title: "The Lord of the Rings: The Two Towers", posterUrl: "https://image.tmdb.org/t/p/w500/5VTN0pR8gcqV3EPUHHfMGnJYN9L.jpg", addedBy: "user_003" },
+    { id: 238, title: "The Godfather", posterUrl: "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg", addedBy: "user_003" },
+    { id: 240, title: "The Godfather Part II", posterUrl: "https://image.tmdb.org/t/p/w500/hek3koDUyRQk7FIhPXsa6mT2Zc3.jpg", addedBy: "user_003" },
+    { id: 769, title: "GoodFellas", posterUrl: "https://image.tmdb.org/t/p/w500/aKuFiU82s5ISJpGZp7YkIr3kCUd.jpg", addedBy: "user_003" }
+  ],
+
+  votes: {
+    "user_001": {
+      27205: 5, 550: 4, 13: 5, 155: 5, 278: 4,
+      680: 3, 424: 4, 389: 3, 496243: 2, 129: 3,
+      120: 4, 122: 4, 238: 5, 240: 4, 769: 3
+    },
+    "user_002": {
+      27205: 4, 550: 5, 13: 3, 155: 5, 278: 5,
+      680: 5, 424: 4, 389: 4, 496243: 3, 129: 4,
+      120: 3, 122: 3, 238: 5, 240: 5, 769: 4
+    }
+    // Charlie has not voted yet
+  }
+};
+
+// Current user for testing
+const currentUser = {
+  id: "user_003",
+  username: "Charlie"
+};

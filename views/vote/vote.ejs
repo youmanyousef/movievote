@@ -1,124 +1,42 @@
-﻿<%- include('../partials/header') %>
-<form action="?">
-	<select id="one" name="One">
-		<option value="none" selected disabled hidden>X</option>
-		<option value="1">1</option>
-		<option value="2">2</option>
-		<option value="3">3</option>
-		<option value="4">4</option>
-		<option value="5">5</option>
-		<option value="6">6</option>
-		<option value="7">7</option>
-		<option value="8">8</option>
-		<option value="9">9</option>
-	</select><br>
-	<select id="two" name="Two">
-		<option value="none" selected disabled hidden>X</option>
-		<option value="1">1</option>
-		<option value="2">2</option>
-		<option value="3">3</option>
-		<option value="4">4</option>
-		<option value="5">5</option>
-		<option value="6">6</option>
-		<option value="7">7</option>
-		<option value="8">8</option>
-		<option value="9">9</option>
-	</select><br>
-	<select id="three" name="Three">
-		<option value="none" selected disabled hidden>X</option>
-		<option value="1">1</option>
-		<option value="2">2</option>
-		<option value="3">3</option>
-		<option value="4">4</option>
-		<option value="5">5</option>
-		<option value="6">6</option>
-		<option value="7">7</option>
-		<option value="8">8</option>
-		<option value="9">9</option>
-	</select><br>
-	<select id="four" name="Four">
-		<option value="none" selected disabled hidden>X</option>
-		<option value="1">1</option>
-		<option value="2">2</option>
-		<option value="3">3</option>
-		<option value="4">4</option>
-		<option value="5">5</option>
-		<option value="6">6</option>
-		<option value="7">7</option>
-		<option value="8">8</option>
-		<option value="9">9</option>
-	</select><br>
-	<select id="five" name="Five">
-		<option value="none" selected disabled hidden>X</option>
-		<option value="1">1</option>
-		<option value="2">2</option>
-		<option value="3">3</option>
-		<option value="4">4</option>
-		<option value="5">5</option>
-		<option value="6">6</option>
-		<option value="7">7</option>
-		<option value="8">8</option>
-		<option value="9">9</option>
-	</select><br>
-	<select id="six" name="Six">
-		<option value="none" selected disabled hidden>X</option>
-		<option value="1">1</option>
-		<option value="2">2</option>
-		<option value="3">3</option>
-		<option value="4">4</option>
-		<option value="5">5</option>
-		<option value="6">6</option>
-		<option value="7">7</option>
-		<option value="8">8</option>
-		<option value="9">9</option>
-	</select><br>
-	<select id="seven" name="Seven">
-		<option value="none" selected disabled hidden>X</option>
-		<option value="1">1</option>
-		<option value="2">2</option>
-		<option value="3">3</option>
-		<option value="4">4</option>
-		<option value="5">5</option>
-		<option value="6">6</option>
-		<option value="7">7</option>
-		<option value="8">8</option>
-		<option value="9">9</option>
-	</select><br>
-	<select id="eight" name="Eight">
-		<option value="none" selected disabled hidden>X</option>
-		<option value="1">1</option>
-		<option value="2">2</option>
-		<option value="3">3</option>
-		<option value="4">4</option>
-		<option value="5">5</option>
-		<option value="6">6</option>
-		<option value="7">7</option>
-		<option value="8">8</option>
-		<option value="9">9</option>
-	</select><br>
-	<select id="nine" name="Nine">
-		<option value="none" selected disabled hidden>X</option>
-		<option value="1">1</option>
-		<option value="2">2</option>
-		<option value="3">3</option>
-		<option value="4">4</option>
-		<option value="5">5</option>
-		<option value="6">6</option>
-		<option value="7">7</option>
-		<option value="8">8</option>
-		<option value="9">9</option>
-	</select><br>
-	<select id="ten" name="Ten">	
-		<option value="none" selected disabled hidden>X</option>
-		<option value="1">1</option>
-		<option value="2">2</option>
-		<option value="3">3</option>
-		<option value="4">4</option>
-		<option value="5">5</option>
-		<option value="6">6</option>
-		<option value="7">7</option>
-		<option value="8">8</option>
-		<option value="9">9</option>
-	</select><br>
-</form>
+
+<%- include('../partials/header') %>
+
+<div class="container">
+    <div class="card">
+        <h1 class="page-title">Rate the Movies</h1>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- PROGRESS INDICATOR -->
+        <!-- ═══════════════════════════════════════════ -->
+        <div class="voting-progress">
+            <p id="progress-text">Rated <span id="rated-count">0</span> of <span id="total-count">15</span> movies</p>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- MOVIES GRID -->
+        <!-- ═══════════════════════════════════════════ -->
+        <div id="voting-grid" class="voting-grid">
+            <!-- Movies will be rendered here by JavaScript -->
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- SUBMIT BUTTON -->
+        <!-- ═══════════════════════════════════════════ -->
+        <button
+            id="submit-votes-btn"
+            class="btn btn-primary"
+            onclick="submitVotes()"
+            disabled
+        >
+            Submit Votes
+        </button>
+    </div>
+</div>
+
+<!-- Load dummy data and voting script -->
+<script src="/javascripts/dummy-data.js"></script>
+<script src="/javascripts/voting-page.js"></script>
 <%- include('../partials/footer') %>
