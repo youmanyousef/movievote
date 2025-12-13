@@ -1,2 +1,61 @@
-﻿<%- include('../partials/header') %>
+
+<%- include('../partials/header') %>
+
+<div class="container">
+    <div class="card">
+        <h1 class="page-title">Voting Results</h1>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- WINNER ANNOUNCEMENT -->
+        <!-- ═══════════════════════════════════════════ -->
+        <div id="winner-section" class="winner-section">
+            <!-- Winner(s) will be rendered here by JavaScript -->
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- STATS SECTION -->
+        <!-- ═══════════════════════════════════════════ -->
+        <div class="stats-section">
+            <div class="stat-box">
+                <span class="stat-label">Total Movies</span>
+                <span class="stat-value" id="total-movies">15</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Total Voters</span>
+                <span class="stat-value" id="total-voters">3</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Highest Score</span>
+                <span class="stat-value" id="highest-score">15</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Average Score</span>
+                <span class="stat-value" id="average-score">12.3</span>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- ALL RESULTS - RANKED -->
+        <!-- ═══════════════════════════════════════════ -->
+        <div class="results-header">
+            <h2>All Results</h2>
+            <p class="subtitle">Ranked by total score</p>
+        </div>
+
+        <div id="results-list" class="results-list">
+            <!-- Results will be rendered here by JavaScript -->
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- BACK BUTTON -->
+        <!-- ═══════════════════════════════════════════ -->
+        <button class="btn btn-secondary" onclick="window.location.href='/vote'">
+            Back to Home
+        </button>
+    </div>
+</div>
+
+<!-- Load dummy results and results script -->
+<script src="/javascripts/dummy-results.js"></script>
+<script src="/javascripts/results-page.js"></script>
 <%- include('../partials/footer') %>

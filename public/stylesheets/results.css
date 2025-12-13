@@ -1,0 +1,252 @@
+/* ═══════════════════════════════════════════════════════════════
+   RESULTS PAGE SPECIFIC STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ======================================
+   Winner css
+   ====================================== */
+
+.winner-section {
+    margin: 30px 0;
+}
+
+.winner-banner {
+    background: linear-gradient(135deg, #e94560 0%, #d63651 100%);
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+}
+
+.winner-banner.tie {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+}
+
+.winner-title {
+    font-size: 2rem;
+    margin: 0 0 10px 0;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.winner-subtitle {
+    font-size: 1.1rem;
+    margin: 0 0 20px 0;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.winner-movies {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.winner-movie {
+    max-width: 200px;
+}
+
+.winner-movie.single {
+    max-width: 250px;
+    margin: 0 auto;
+}
+
+.winner-movie img {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    margin-bottom: 15px;
+}
+
+.winner-movie h3 {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    color: white;
+}
+
+.winner-score {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    margin: 5px 0;
+}
+
+/* ======================================
+   Stats css
+   ====================================== */
+
+.stats-section {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.stat-box {
+    background: #16213e;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #a0a0a0;
+    margin-bottom: 10px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #e94560;
+}
+
+/* ======================================
+   Results css
+   ====================================== */
+
+.results-header {
+    margin: 40px 0 20px 0;
+    text-align: center;
+}
+
+.results-header h2 {
+    margin: 0 0 5px 0;
+    font-size: 1.8rem;
+}
+
+.subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: #a0a0a0;
+}
+
+/* ======================================
+   Result lists css
+   ====================================== */
+
+.results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 20px 0 30px 0;
+}
+
+.result-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: #16213e;
+    border-radius: 8px;
+    padding: 15px;
+    transition: transform 0.2s;
+}
+
+.result-item:hover {
+    transform: translateX(5px);
+}
+
+.result-item.winner-highlight {
+    border: 2px solid #e94560;
+    box-shadow: 0 0 15px rgba(233, 69, 96, 0.3);
+}
+
+.result-rank {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #e94560;
+    min-width: 50px;
+    text-align: center;
+}
+
+.result-poster {
+    flex-shrink: 0;
+}
+
+.result-poster img {
+    width: 80px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.result-info {
+    flex: 1;
+}
+
+.result-title {
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.winner-badge {
+    font-size: 0.8rem;
+    background: #e94560;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: white;
+}
+
+.result-scores {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.total-score {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #4ade80;
+}
+
+.avg-rating {
+    font-size: 1rem;
+    color: #a0a0a0;
+}
+
+.vote-breakdown {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.user-vote {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+}
+
+.user-name {
+    color: #a0a0a0;
+}
+
+.user-rating {
+    color: #fbbf24;
+    font-weight: 600;
+}
+
+/* ======================================
+   Other css
+   ====================================== */
+
+@media (max-width: 768px) {
+    .stats-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .result-item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .result-rank {
+        font-size: 2rem;
+    }
+}
