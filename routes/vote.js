@@ -43,7 +43,6 @@ router.get('/api/search', async (req, res) => {
 
 
 router.get('/', (req, res) => {
-	console.log('hi');
     res.render('vote/home', { 
 		title: 'Home',
 		message: 'Welcome to the Authentication Template'
@@ -196,7 +195,7 @@ router.post('/create', async (req, res) => {
 router.post('/lobby/ready', async (req, res) => {
 	const code = (req.body.code || '').trim().toUpperCase();
   	if (!code) return res.redirect('/vote/join');
-
+		
 	const lobby = await Lobby.get(code);
 	if (!lobby || !req.session.user) return res.redirect('/vote/join');
 
@@ -209,6 +208,7 @@ router.post('/lobby/ready', async (req, res) => {
 });
 
 router.post('/lobby/start', async (req, res) => {
+	 
   	const code = (req.body.code || '').trim().toUpperCase();
   	if (!code) return res.redirect('/vote/join');
 
@@ -226,5 +226,22 @@ router.post('/lobby/start', async (req, res) => {
   	return res.redirect(`/vote/choices?code=${encodeURIComponent(code)}`);
 });
 
+router.post('/lobby/leave', async (req, res) => {
+	const code = (req.body.code || '').trim().toUpperCase();
+  	if (!code) {
+		return res.redirect('/vote/join');
+	}
+	
+	
+	
+  	const lobby = await Lobby.get(code);
+  	if (!lobby || !req.session.user) return res.redirect('/vote/join');
+
+  	const userId = req.session.user.id;
+	// add in edge case for host // const isHost = lobby.createdBy === userId;
+	
+	const temp = await Lobby.userLeave(code, userId);
+	return res.redirect('/vote');
+});
 
 module.exports = router;

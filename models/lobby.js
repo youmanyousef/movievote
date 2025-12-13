@@ -14,9 +14,30 @@ async function get(code) {
     return lobbies.get(code) || null;
 }
 
+async function userLeave(code, userID) {
+	let lobby = lobbies.get(code)
+	let users = await lobby.users;
+	let user = undefined;
+	for (const uid of users) {
+		if (userID === uid.id) {
+			user = uid; 
+			break;
+		}
+	}
+	if (!user) {
+		return -1;
+	} 
+	users = users.filter(item => item !== user)
+	lobby.users = users;
+
+	
+	lobbies.set(code, lobby);
+}
+
 
 module.exports = { 
     exists, 
     create, 
-    get 
+    get,
+	userLeave
 };
