@@ -1,2 +1,45 @@
 ﻿<%- include('../partials/header') %>
+<form id="nextPage" action="" method="POST">
+	<input type="hidden" name="code" value="<%= code %>">
+	<button type="submit" hidden class="btn btn-primary">GO!</button>
+</form>
+<script>
+async function pollingFunction(code) {
+	const data = `{ "code" : "${code}" }`;
+	console.log(data);
+<% if (act === "choice") { %>
+	const url = '/vote/wait/choices';
+<% } else { %>
+	const url = '/vote/wait/x';
+<% } %>
+	fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: data
+		}).then(response => {
+			console.log(response);
+			if (!response.ok) {
+				throw new Error('Network error. Something went wrong. Go back to the home page.');
+			}
+			return response.json();
+		}).then (data => {
+			const isAllReady = data.message;
+			if (!isAllReady) { break; }
+			<% if (act === "choice") { %>
+				const nextUrl = '/vote/rank';
+			<% } else { %>
+				const nextUrl = '/vote/x';
+			<% } %>
+			const form = document.getElementById("nextPage");
+			form.action = nextUrl;
+			console.log(data);
+		}).catch(error => {
+			console.error('Something went wrong. Go back to the home page.', error);
+		});
+
+}
+const pollingInterval = setInterval(() => pollingFunction('<%= code %>'),1000);
+</script>
 <%- include('../partials/footer') %>
