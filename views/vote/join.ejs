@@ -1,8 +1,48 @@
-﻿<%- include('../partials/header') %>
-<p> <%= message %> </p>
-<form action="/vote/lobby" method="GET">
-	<label for="joinCode">Enter code to join: </label>
-	<input id="joinCode" name="code" required>
-	<input type="submit" value="GO!">
-</form>
+<%- include('../partials/header') %>
+
+<div class="container">
+    <div class="card">
+        <h1 class="join-page-title">Join Lobby</h1>
+        <p class="join-subtitle">Enter the lobby code to join your friends</p>
+
+        <% if (message) { %>
+            <div class="alert-message">
+                <%= message %>
+            </div>
+        <% } %>
+
+        <form action="/vote/lobby" method="GET" class="join-form">
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- LOBBY CODE INPUT -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="form-group">
+                <label for="joinCode" class="form-label">Lobby Code</label>
+                <input
+                    type="text"
+                    id="joinCode"
+                    name="code"
+                    class="form-input join-code-input"
+                    placeholder="e.g. MOVIE2024"
+                    maxlength="12"
+                    required
+                    autofocus
+                >
+                <small class="form-hint">Enter the code shared by your host</small>
+            </div>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- SUBMIT BUTTON -->
+            <!-- ═══════════════════════════════════════════ -->
+            <button type="submit" class="btn btn-primary btn-full">
+                Join Lobby
+            </button>
+
+            <a href="/vote" class="btn btn-secondary btn-full">
+                Back
+            </a>
+        </form>
+    </div>
+</div>
+
 <%- include('../partials/footer') %>

@@ -1,24 +1,83 @@
-﻿<%- include('../partials/header') %>
-<form action="/vote/create" method="POST">
-	<label for="lobbyCode">Lobby Code:</label>
-	<input id="lobbyCode" name="code" placeholder="e.g. ABC123" required>
-	<small> Create a code to share with friends!</small>
-	<br><br>
+<%- include('../partials/header') %>
 
-	<input type="checkbox" id="enableShows" name="enableShows" value="1">
-	<label for="enableShows">Enable Shows?</label><br>
+<div class="container">
+    <div class="card">
+        <h1 class="page-title">Create Lobby</h1>
+        <p class="subtitle">Set up your movie voting session</p>
 
-	<input type="checkbox" id="enableMovies" name="enableMovies" value="1">
-	<label for="enableMovies">Enable Movies?</label><br>
+        <form action="/vote/create" method="POST" class="create-form">
 
-	<input type="checkbox" id="setTimer" name="setTimer" value="1">
-	<label for="setTimer">Enable a time limit during the voting phase?</label><br>
-	<input hidden id="setTimerValue"> <br>
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- LOBBY CODE INPUT -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="form-group">
+                <label for="lobbyCode" class="form-label">Lobby Code</label>
+                <input
+                    type="text"
+                    id="lobbyCode"
+                    name="code"
+                    class="form-input"
+                    placeholder="e.g. MOVIE2024"
+                    maxlength="12"
+                    required
+                >
+                <small class="form-hint">Create a unique code to share with friends (3-12 characters)</small>
+            </div>
 
-	<label for="choices">Choices per user: </label>
-	<input id="choices" name="choicesPerUser" type="number" min="1" required> 
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- CHOICES PER USER -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="form-group">
+                <label for="choices" class="form-label">Choices per User</label>
+                <input
+                    type="number"
+                    id="choices"
+                    name="choicesPerUser"
+                    class="form-input"
+                    min="1"
+                    max="10"
+                    value="5"
+                    required
+                >
+                <small class="form-hint">How many movies each person can pick</small>
+            </div>
 
-	<input type="submit" value="Submit">
-</form>
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- OPTIONS CHECKBOXES -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="form-group">
+                <label class="form-label">Options</label>
+
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="enableMovies" value="1" checked>
+                        <span>Enable Movies</span>
+                    </label>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="enableShows" value="1">
+                        <span>Enable TV Shows</span>
+                    </label>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="setTimer" value="1">
+                        <span>Enable Time Limit</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- SUBMIT BUTTON -->
+            <!-- ═══════════════════════════════════════════ -->
+            <button type="submit" class="btn btn-primary btn-full">
+                Create Lobby
+            </button>
+
+            <a href="/vote" class="btn btn-secondary btn-full">
+                Cancel
+            </a>
+        </form>
+    </div>
+</div>
 
 <%- include('../partials/footer') %>

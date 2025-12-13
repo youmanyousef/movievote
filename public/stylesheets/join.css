@@ -1,0 +1,42 @@
+/* ═══════════════════════════════════════════════════════════════
+   JOIN LOBBY PAGE - STYLING
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Title Styling */
+.join-page-title {
+    font-size: 4rem;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.join-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #a0a0a0;
+    margin-bottom: 40px;
+}
+
+/* Alert Message */
+.alert-message {
+    background: rgba(233, 69, 96, 0.2);
+    border: 2px solid #e94560;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #e94560;
+    font-weight: 600;
+}
+
+/* Form Styling */
+.join-form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.join-code-input {
+    text-align: center;
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}

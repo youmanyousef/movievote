@@ -1,21 +1,22 @@
-﻿<%- include('../partials/header') %>
-	<div class="container">
-          <div class="landing-card">
-              <div class="logo-section">
-                  <h1 class="app-title">🎬 MovieVote</h1>
-                  <p class="app-tagline">Vote together, watch together</p>
-              </div>
+<%- include('../partials/header') %>
 
-              <div class="button-group">
-				  <% if (isAuthenticated) { %>
-					<a href="/vote/join" class="btn btn-primary">Join Lobby</a>
-					<a href="/vote/create" class="btn btn-primary">Create Lobby</a>
-					<a href="/auth/logout" class="btn btn-secondary">Logout</a>
-				  <% } else { %>
-					<a href="/auth/login" class="btn btn-primary">Login</a>
-					<a href="/auth/register" class="btn btn-secondary">Register</a>
-				  <% } %>
-              </div>
-          </div>
-      </div>
+<div class="container">
+    <div class="card">
+        <h1 class="home-page-title">🎬 MovieVote</h1>
+        <p class="home-subtitle">Vote together, watch together</p>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- BIG BUTTONS -->
+        <!-- ═══════════════════════════════════════════ -->
+        <div class="home-buttons">
+            <a href="/vote/create" class="btn-large btn-primary-large">
+                Create Lobby
+            </a>
+            <a href="/vote/join" class="btn-large btn-secondary-large">
+                Join Lobby
+            </a>
+        </div>
+    </div>
+</div>
+
 <%- include('../partials/footer') %>
