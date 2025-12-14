@@ -3,7 +3,7 @@
  */
 const express = require('express');
 const router = express.Router();
-const Lobby = require('../models/lobby');
+const Lobby = require('../models/Lobby');
 const tmdb = require('../scripts/tmdb');
 
 /// ---- This Route is for the TMBD API ---- ///
