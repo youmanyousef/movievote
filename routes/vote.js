@@ -4,7 +4,7 @@
 const express = require('express');
 const router = express.Router();
 const Lobby = require('../models/lobby');
-const tmdb = require('../services/tmdb');
+const tmdb = require('../scripts/tmdb');
 
 /// ---- This Route is for the TMBD API ---- ///
 router.get('/api/search', async (req, res) => {
