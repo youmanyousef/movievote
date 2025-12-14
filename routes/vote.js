@@ -1,5 +1,7 @@
 /**
  * vote routes
+ * well, its also the controller too. not a very 
+ * efficient design.
  */
 const express = require('express');
 const router = express.Router();
@@ -43,12 +45,12 @@ router.get('/api/results', async (req, res) => {
 	if (!code){
 		return res.status(400).json({ ok: false, error: 'Missing code' });
 	}
-
 	const lobby = await Lobby.get(code);
 	if (!lobby || !Array.isArray(lobby.users)) {
 		return res.status(404).json({ ok: false, error: 'Lobby not found' });
 	}
 
+	
 	try{
 		const movieIdSet = new Set();
 		for (const u of lobby.users) {
@@ -179,7 +181,7 @@ router.get('/api/choices', async (req, res) => {
 /// --------------------------------------- ///
 
 
-
+// testing routes 
 router.get('/', (req, res) => {
     res.render('vote/home', { 
 		title: 'Home',
@@ -202,9 +204,9 @@ router.get('/join', (req, res) => {
 });
 
 router.get('/lobby', async (req, res) => {
+	// is the lobby code valid?
 	const code = (req.query.code || '').trim().toUpperCase();
 	if (!code) return res.redirect('/vote/join');
-
 	const lobby = await Lobby.get(code);
 	if (!lobby) {
 		return res.status(404).render('vote/join', {
@@ -214,7 +216,7 @@ router.get('/lobby', async (req, res) => {
 	}
 	
 	
-
+	// is the user logged in?
 	if (!req.session.user) return res.redirect('/auth/login');
 
 	const userId = req.session.user.id;
@@ -223,6 +225,8 @@ router.get('/lobby', async (req, res) => {
 	for (user in lobby.users) {
 		allUserIds.push(user.id);
 	}
+	
+	// is the user trying join a lobby that has started already?
 	if (lobby.lobbyStatus != "start" && !allUserIds.includes(userId)) {
 		return res.status(404).render('vote/join', {
 			title: 'Join',
@@ -230,7 +234,7 @@ router.get('/lobby', async (req, res) => {
 		});
 	}
 	
-
+	// set the users list for the lobby if it doesn't exist
 	if (!Array.isArray(lobby.users)) lobby.users = [];
 
 	if (!lobby.users.some(u => u.id === userId)) {
@@ -251,6 +255,7 @@ router.get('/lobby', async (req, res) => {
 	});
 });
 
+// api - return the status of the lobby and if all users are ready 
 router.get('/lobby/status', async (req, res) => {
   	const code = (req.query.code || '').trim().toUpperCase();
   	const lobby = await Lobby.get(code);
@@ -264,7 +269,7 @@ router.get('/lobby/status', async (req, res) => {
   	return res.json({ ok: true, everyoneReady });
 });
 
-
+// testing pages
 router.get('/vote', (req, res) => {
 	const code = (req.query.code || '').trim().toUpperCase();
 
@@ -284,7 +289,6 @@ router.get('/result', (req, res) => {
 
 router.get('/choices', async (req, res) => {
 	const code = (req.query.code || '').trim().toUpperCase();
-	console.log("ping");
   	if (!code) return res.redirect('/vote/join');
 
   	const lobby = await Lobby.get(code);
@@ -297,17 +301,7 @@ router.get('/choices', async (req, res) => {
 	});
 });
 
-/* router.post('/wait', async (req, res) => {
-	const code = (req.body.code || '').trim().toUpperCase();
-  	const lobby = await Lobby.get(code);
-	res.render('vote/wait', { 
-		title: 'Waiting...',
-		code: code,
-		act: "
-		message: 'Welcome to the Authentication Template'
-	});
-});  */
-
+// api - handle the two wait pages.
 router.get('/wait/results', (req, res) => {
 	const code = (req.query.code || '').trim().toUpperCase();
 
@@ -330,6 +324,8 @@ router.get('/wait/rank', (req, res) => {
 	});
 }); 
 
+
+// api - user submitted votes checker
 router.post('/api/submit-votes', async (req, res) => {
 	const code = ((req.body.code || '').toString() || '').trim().toUpperCase();
 	if (!code){
@@ -360,20 +356,16 @@ router.post('/api/submit-votes', async (req, res) => {
 
 });
 
+// api - return true if the users have finished picking movies to vote on
 router.post('/wait/choices', async (req, res) => {
-	console.log("ping choices");
 	const code = ((req.body.code || '').toString() || '').trim().toUpperCase();
   	const lobby = await Lobby.get(code);
 	if (!lobby || !Array.isArray(lobby.users)) {
 		return res.status(404).json({ message: false });
 	}
-	console.log(code);
-	console.log(lobby);
 	const userCount = lobby.users.length;
 	let usersReady = 0;
 	for (const user of lobby.users) {
-		console.log(user);
-		
 		if (Array.isArray(user.choices) && user.choices.length === lobby.choicesPerUser) { //hard coded!!
 			usersReady += 1;
 		}
@@ -384,9 +376,9 @@ router.post('/wait/choices', async (req, res) => {
 	});
 }); 
 
+// * 
 router.post('/wait', async (req, res) => {
 	const code = (req.body.code || '').trim().toUpperCase();
-	console.log("ping")
   	if (!code) return res.redirect('/vote/join');
 
   	const lobby = await Lobby.get(code);
@@ -394,18 +386,19 @@ router.post('/wait', async (req, res) => {
 	
 	const act = req.body.act;
 	
+	// take the movie choices from the choices page, and send them 
+	// to the user data in the lobby object
 	const userChoices = req.body.userChoices;
 	const userChoicesArr = userChoices.split('|');
 	const userId = req.session.user.id;
 	const userData = lobby.users.find(u => u.id === userId);
 	userData.choices = userChoicesArr;
-	console.log(lobby);
-	console.log("**")
 	console.log(lobby.users.find(u => u.id === userId));
 	
 	return res.redirect(`/vote/wait/rank?code=${encodeURIComponent(code)}`);
 }); 
 
+// api - return true if everyone has finished voting
 router.post('/wait/votes', async (req, res) => {
 	const code = ((req.body.code || '').toString() || '').trim().toUpperCase();
 	const lobby = await Lobby.get(code);
@@ -426,6 +419,7 @@ router.post('/wait/votes', async (req, res) => {
 	return res.json({ message: allVoted });
 });
 
+// create lobby page
 router.post('/create', async (req, res) => {
   	const code = (req.body.code || '').trim().toUpperCase();
 
@@ -442,7 +436,8 @@ router.post('/create', async (req, res) => {
       	message: 'That lobby code is already taken. Pick another.'
     });
   }
-
+	
+	// lobby object
   	await Lobby.create(code, {
     	createdBy: req.session.user?.id || null,
     	enableShows: !!req.body.enableShows,
@@ -455,6 +450,7 @@ router.post('/create', async (req, res) => {
   return res.redirect(`/vote/lobby?code=${encodeURIComponent(code)}`);
   
 });
+
 
 router.post('/lobby/ready', async (req, res) => {
 	
@@ -473,6 +469,11 @@ router.post('/lobby/ready', async (req, res) => {
 	return res.redirect(`/vote/lobby?code=${encodeURIComponent(code)}`);
 });
 
+// if everyone is ready, start the process. NOTE: 
+// there is a bug where users can still join after 
+// starting the vote. tried to fix with lobbyStatus
+// but only the host is able to proceed and the
+// other users are booted. 
 router.post('/lobby/start', async (req, res) => {
 	console.log('start')
   	const code = (req.body.code || '').trim().toUpperCase();
@@ -484,11 +485,6 @@ router.post('/lobby/start', async (req, res) => {
   	const userId = req.session.user.id;
   	const isHost = lobby.createdBy === userId;
   	const everyoneReady = (lobby.users || []).length > 0 && lobby.users.every(u => u.ready);
-
-  	/*if (!isHost || !everyoneReady) {
-		console.log("--ping");
-    	return res.redirect(`/vote/lobby?code=${encodeURIComponent(code)}`);
-  	}*/
 	// lobby.lobbyStatus = "choosing"; come back to this when i can fix this :(
 	console.log(lobby); 
   	res.render('vote/choices', {
@@ -498,6 +494,8 @@ router.post('/lobby/start', async (req, res) => {
 	});
 });
 
+// leave functionality. Also can be leveraged
+// for kick/ban functionality as well in future.
 router.post('/lobby/leave', async (req, res) => {
 	const code = (req.body.code || '').trim().toUpperCase();
   	if (!code) {

@@ -9,7 +9,8 @@
 	const code = "<%= code %>";
 	const pollUrl = "<%= pollUrl %>";
 	const nextUrl = "<%= nextUrl %>";
-
+	// This isn't the best way to update the client, its not very secure (prone to DoS) 
+	// But its a "easier" solution compared to websocket.
 	async function checkReady() {
 		try{
 			const res = await fetch(pollUrl, {
